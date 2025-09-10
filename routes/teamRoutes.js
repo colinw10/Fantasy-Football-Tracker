@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const Team = require('../models/Team');
+const RosterSpot = require('../models/RosterSpot');   // NEW
+const Player = require('../models/Player');           // NEW
 
 // Middleware to require login
 function requireAuth(req, res, next) {
@@ -31,13 +33,20 @@ router.post('/', requireAuth, async (req, res) => {
   res.redirect('/teams');
 });
 
-// Show - detail of one team
+// Show - detail of one team (with roster + players list)
 router.get('/:id', requireAuth, async (req, res) => {
   const team = await Team.findById(req.params.id).populate('owner');
   if (!team || team.owner._id.toString() !== req.session.userId) {
     return res.redirect('/teams');
   }
-  res.render('teams/show.ejs', { team });
+
+  // Get roster for this team
+  const roster = await RosterSpot.find({ team: req.params.id }).populate('player');
+
+  // Get all players for dropdown
+  const allPlayers = await Player.find({});
+
+  res.render('teams/show.ejs', { team, roster, players: allPlayers });
 });
 
 // Edit - form to edit team
@@ -70,6 +79,29 @@ router.delete('/:id', requireAuth, async (req, res) => {
   res.redirect('/teams');
 });
 
+// -----------------------------
+// Roster routes
+// -----------------------------
+
+// Add player to team roster
+router.post('/:id/roster', requireAuth, async (req, res) => {
+  await RosterSpot.create({
+    team: req.params.id,
+    player: req.body.playerId
+  });
+  res.redirect(`/teams/${req.params.id}`);
+});
+
+// Remove player from team roster
+router.delete('/roster/:rosterSpotId', requireAuth, async (req, res) => {
+  const spot = await RosterSpot.findById(req.params.rosterSpotId).populate('team');
+  if (spot.team.owner.toString() === req.session.userId) {
+    await RosterSpot.findByIdAndDelete(req.params.rosterSpotId);
+  }
+  res.redirect(`/teams/${spot.team._id}`);
+});
+
 module.exports = router;
+
 
 

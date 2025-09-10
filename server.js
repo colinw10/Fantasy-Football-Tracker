@@ -5,7 +5,12 @@ const methodOverride = require('method-override');
 const morgan = require('morgan');
 const dotenv = require('dotenv');
 const session = require('express-session');
-const mongo = require('connect-mongo'); // using 'mongo' here
+const mongo = require('connect-mongo'); 
+const statRoutes = require('./routes/statRoutes');
+const expressLayouts = require('express-ejs-layouts');
+
+
+
 
 dotenv.config();
 
@@ -16,6 +21,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
 app.use(morgan('dev'));
 app.use(express.static('public'));
+app.use('/stats', statRoutes);
+app.use(expressLayouts);
 
 // EJS view engine
 app.set('view engine', 'ejs');

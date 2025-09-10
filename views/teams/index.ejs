@@ -1,20 +1,15 @@
-<!DOCTYPE html>
-<html>
-<head><title>My Teams</title></head>
-<body>
-  <h1>My Teams</h1>
-  <a href="/teams/new">Create New Team</a>
-  <ul>
-    <% teams.forEach(team => { %>
-      <li>
-        <a href="/teams/<%= team._id %>"><%= team.name %> - <%= team.leagueName %></a>
-        <a href="/teams/<%= team._id %>/edit">Edit</a>
-        <form action="/teams/<%= team._id %>?_method=DELETE" method="POST" style="display:inline;">
-          <button type="submit">Delete</button>
-        </form>
-      </li>
-    <% }) %>
-  </ul>
-</body>
-</html>
+<h1>My Teams</h1>
+<a href="/teams/new">Create New Team</a>
+<ul>
+  <% teams.forEach(team => { %>
+    <li>
+      <a href="/teams/<%= team._id %>"><%= team.name %> - <%= team.leagueName %></a>
+      <a href="/teams/<%= team._id %>/edit">Edit</a>
+      <form action="/teams/<%= team._id %>?_method=DELETE" method="POST" style="display:inline;">
+        <button type="submit">Delete</button>
+      </form>
+    </li>
+  <% }) %>
+</ul>
+
 

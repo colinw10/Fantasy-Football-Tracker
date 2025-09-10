@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Player = require('../models/Player');
+const StatLine = require('../models/StatLine'); // NEW
 
 // Index - list all players
 router.get('/', async (req, res) => {
@@ -19,10 +20,11 @@ router.post('/', async (req, res) => {
   res.redirect('/players');
 });
 
-// Show - one player detail
+// Show - one player detail (with stats)
 router.get('/:id', async (req, res) => {
   const foundPlayer = await Player.findById(req.params.id);
-  res.render('players/show.ejs', { player: foundPlayer });
+  const stats = await StatLine.find({ player: req.params.id }); // NEW
+  res.render('players/show.ejs', { player: foundPlayer, stats });
 });
 
 // Edit - show form to edit player
@@ -44,3 +46,4 @@ router.delete('/:id', async (req, res) => {
 });
 
 module.exports = router;
+

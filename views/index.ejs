@@ -1,0 +1,10 @@
+<h1>Welcome to Fantasy Football Tracker</h1>
+<p>Track players, teams, rosters, and stats in one place.</p>
+
+<% if (userId) { %>
+  <a href="/players">View Players</a> |
+  <a href="/teams">My Teams</a>
+<% } else { %>
+  <a href="/auth/login">Login</a> |
+  <a href="/auth/signup">Sign Up</a>
+<% } %>
