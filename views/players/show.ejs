@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title><%= player.name %></title>
+</head>
+<body>
+  <h1><%= player.name %></h1>
+  <p>Team: <%= player.team %></p>
+  <p>Position: <%= player.position %></p>
+  <p>Injury Status: <%= player.injuryStatus %></p>
+
+  <a href="/players/<%= player._id %>/edit">Edit</a>
+
+  <form action="/players/<%= player._id %>?_method=DELETE" method="POST">
+    <button type="submit">Delete</button>
+  </form>
+
+  <a href="/players">Back to All Players</a>
+</body>
+</html>

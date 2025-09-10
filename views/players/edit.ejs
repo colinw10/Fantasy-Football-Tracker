@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Edit <%= player.name %></title>
+</head>
+<body>
+  <h1>Edit <%= player.name %></h1>
+  <form action="/players/<%= player._id %>?_method=PUT" method="POST">
+    <label>Name:</label>
+    <input type="text" name="name" value="<%= player.name %>" />
+    <label>Team:</label>
+    <input type="text" name="team" value="<%= player.team %>" />
+    <label>Position:</label>
+    <input type="text" name="position" value="<%= player.position %>" />
+    <label>Injury Status:</label>
+    <input type="text" name="injuryStatus" value="<%= player.injuryStatus %>" />
+    <button type="submit">Save Changes</button>
+  </form>
+</body>
+</html>
