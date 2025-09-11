@@ -1,0 +1,11 @@
+<h1>All Stats</h1>
+<ul>
+  <% stats.forEach(stat => { %>
+    <li>
+      <%= stat.player.name %> - Week <%= stat.week %>: 
+      <%= stat.passingYards %> passing, <%= stat.rushingYards %> rushing, 
+      <%= stat.receivingYards %> receiving
+    </li>
+  <% }) %>
+</ul>
+<a href="/stats/new">Add Stats</a>

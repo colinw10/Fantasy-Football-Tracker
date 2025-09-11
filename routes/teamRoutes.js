@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const Team = require('../models/Team');
-const RosterSpot = require('../models/RosterSpot');   // NEW
-const Player = require('../models/Player');           // NEW
+const RosterSpot = require('../models/RosterSpot');
+const Player = require('../models/Player');
 
 // Middleware to require login
 function requireAuth(req, res, next) {
@@ -40,10 +40,7 @@ router.get('/:id', requireAuth, async (req, res) => {
     return res.redirect('/teams');
   }
 
-  // Get roster for this team
   const roster = await RosterSpot.find({ team: req.params.id }).populate('player');
-
-  // Get all players for dropdown
   const allPlayers = await Player.find({});
 
   res.render('teams/show.ejs', { team, roster, players: allPlayers });
@@ -85,23 +82,34 @@ router.delete('/:id', requireAuth, async (req, res) => {
 
 // Add player to team roster
 router.post('/:id/roster', requireAuth, async (req, res) => {
-  await RosterSpot.create({
-    team: req.params.id,
-    player: req.body.playerId
-  });
-  res.redirect(`/teams/${req.params.id}`);
+  try {
+    if (!req.body.playerId) {
+      throw new Error("No player selected");
+    }
+    await RosterSpot.create({
+      team: req.params.id,
+      player: req.body.playerId
+    });
+    res.redirect(`/teams/${req.params.id}`);
+  } catch (err) {
+    console.error("Error adding player to roster:", err.message);
+    res.redirect(`/teams/${req.params.id}`);
+  }
 });
 
 // Remove player from team roster
 router.delete('/roster/:rosterSpotId', requireAuth, async (req, res) => {
   const spot = await RosterSpot.findById(req.params.rosterSpotId).populate('team');
-  if (spot.team.owner.toString() === req.session.userId) {
+  if (spot && spot.team.owner.toString() === req.session.userId) {
     await RosterSpot.findByIdAndDelete(req.params.rosterSpotId);
+    res.redirect(`/teams/${spot.team._id}`);
+  } else {
+    res.redirect('/teams');
   }
-  res.redirect(`/teams/${spot.team._id}`);
 });
 
 module.exports = router;
+
 
 
 

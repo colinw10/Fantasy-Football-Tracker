@@ -1,36 +1,16 @@
-const express = require('express');
-const router = express.Router();
-const StatLine = require('../models/StatLine');
-const Player = require('../models/Player');
+const mongoose = require('mongoose');
 
-// New - form to create statline
-router.get('/new', async (req, res) => {
-  const players = await Player.find({});
-  res.render('stats/new.ejs', { players });
+const statLineSchema = new mongoose.Schema({
+  player: { type: mongoose.Schema.Types.ObjectId, ref: 'Player', required: true },
+  week: { type: Number, required: true },
+  passingYards: Number,
+  rushingYards: Number,
+  receivingYards: Number,
+  touchdowns: Number,
+  carries: Number,
+  receptions: Number,
+  projectedStats: String
 });
 
-// Create - add new statline
-router.post('/', async (req, res) => {
-  await StatLine.create(req.body);
-  res.redirect('/players'); // after adding stats, send back to players list
-});
+module.exports = mongoose.model('StatLine', statLineSchema);
 
-// Edit - form to edit statline
-router.get('/:id/edit', async (req, res) => {
-  const stat = await StatLine.findById(req.params.id).populate('player');
-  res.render('stats/edit.ejs', { stat });
-});
-
-// Update - update statline in DB
-router.put('/:id', async (req, res) => {
-  await StatLine.findByIdAndUpdate(req.params.id, req.body);
-  res.redirect('/players');
-});
-
-// Delete - remove statline
-router.delete('/:id', async (req, res) => {
-  await StatLine.findByIdAndDelete(req.params.id);
-  res.redirect('/players');
-});
-
-module.exports = router;

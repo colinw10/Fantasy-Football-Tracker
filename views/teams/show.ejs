@@ -1,35 +1,31 @@
 <h1><%= team.name %></h1>
 <p>League: <%= team.leagueName %></p>
 
-<hr />
-
 <h2>Roster</h2>
 <ul>
-  <% if (roster && roster.length > 0) { %>
-    <% roster.forEach(spot => { %>
-      <li>
-        <%= spot.player.name %> - <%= spot.player.position %> (<%= spot.player.team %>)
-        <form action="/teams/roster/<%= spot._id %>?_method=DELETE" method="POST" style="display:inline;">
-          <button type="submit">Remove</button>
-        </form>
-      </li>
-    <% }) %>
-  <% } else { %>
-    <li>No players yet</li>
-  <% } %>
+  <% roster.forEach(spot => { %>
+    <li>
+      <%= spot.player.name %> - <%= spot.player.position %>
+      <form action="/teams/roster/<%= spot._id %>?_method=DELETE" method="POST" style="display:inline;">
+        <button type="submit">Remove</button>
+      </form>
+    </li>
+  <% }) %>
 </ul>
 
-<h3>Add Player</h3>
+<h3>Add Player to Roster</h3>
 <form action="/teams/<%= team._id %>/roster" method="POST">
-  <select name="playerId">
+  <select name="playerId" required>
+    <option value="">-- Select a player --</option>
     <% players.forEach(player => { %>
       <option value="<%= player._id %>"><%= player.name %> - <%= player.position %></option>
     <% }) %>
   </select>
-  <button type="submit">Add to Roster</button>
+  <button type="submit">Add</button>
 </form>
 
 <a href="/teams">Back to My Teams</a>
+
 
 
 

@@ -1,0 +1,18 @@
+<nav style="margin-bottom: 1rem;">
+  <a href="/">Home</a> |
+  <a href="/teams">My Teams</a> |
+  <a href="/players">Players</a> |
+  <a href="/stats">Stats</a>
+
+  <% if (userId) { %>
+    |
+    <form action="/auth/logout" method="POST" style="display:inline;">
+      <button type="submit">Logout</button>
+    </form>
+  <% } else { %>
+    |
+    <a href="/auth/login">Login</a> |
+    <a href="/auth/signup">Sign Up</a>
+  <% } %>
+</nav>
+<hr>

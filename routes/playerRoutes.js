@@ -16,9 +16,17 @@ router.get('/new', (req, res) => {
 
 // Create - add new player
 router.post('/', async (req, res) => {
-  await Player.create(req.body);
-  res.redirect('/players');
+  const { redirectToTeam, ...playerData } = req.body;
+  const newPlayer = await Player.create(playerData);
+
+  if (redirectToTeam) {
+    // If the request came from a team page, redirect back there
+    res.redirect(`/teams/${redirectToTeam}`);
+  } else {
+    res.redirect('/players');
+  }
 });
+
 
 // Show - one player detail (with stats)
 router.get('/:id', async (req, res) => {
