@@ -1,13 +1,15 @@
-<h1>Create a New Team</h1>
-<form action="/teams" method="POST">
-  <label for="name">Team Name:</label>
-  <input type="text" name="name" required>
+<div class="container">
+  <h1>Create a New Team</h1>
+  <form action="/teams" method="POST">
+    <label for="name">Team Name:</label>
+    <input type="text" name="name" required>
 
-  <label for="leagueName">League Name:</label>
-  <input type="text" name="leagueName">
+    <label for="leagueName">League Name:</label>
+    <input type="text" name="leagueName">
 
-  <button type="submit">Save</button>
-</form>
-<a href="/teams">Cancel</a>
+    <button type="submit" class="btn btn-add">Save</button>
+  </form>
+  <a href="/teams" class="btn btn-delete">Cancel</a>
+</div>
 
 

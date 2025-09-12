@@ -1,36 +1,44 @@
-<h1>Add Stats</h1>
-<form action="/stats" method="POST">
-  <label>Player:</label>
-  <select name="player" required>
-    <% players.forEach(p => { %>
-      <option value="<%= p._id %>"><%= p.name %> - <%= p.position %></option>
-    <% }) %>
-  </select>
+<div class="container">
+  <h1>Add Stats</h1>
+  <form action="/stats" method="POST">
+    <label>Player:</label>
+    <select name="player" required>
+      <% players.forEach(p => { %>
+        <option value="<%= p._id %>"><%= p.name %> - <%= p.position %></option>
+      <% }) %>
+    </select>
 
-  <label>Week:</label>
-  <input type="number" name="week" required>
+    <label>Week:</label>
+    <input type="number" name="week" required>
 
-  <label>Passing Yards:</label>
-  <input type="number" name="passingYards">
+    <label>Passing Yards:</label>
+    <input type="number" name="passingYards">
 
-  <label>Rushing Yards:</label>
-  <input type="number" name="rushingYards">
+    <label>Rushing Yards:</label>
+    <input type="number" name="rushingYards">
 
-  <label>Receiving Yards:</label>
-  <input type="number" name="receivingYards">
+    <label>Receiving Yards:</label>
+    <input type="number" name="receivingYards">
 
-  <label>Touchdowns:</label>
-  <input type="number" name="touchdowns">
+    <label>Touchdowns:</label>
+    <input type="number" name="touchdowns">
 
-  <label>Carries:</label>
-  <input type="number" name="carries">
+    <label>Carries:</label>
+    <input type="number" name="carries">
 
-  <label>Receptions:</label>
-  <input type="number" name="receptions">
+    <label>Receptions:</label>
+    <input type="number" name="receptions">
 
-  <label>Projected Stats:</label>
-  <input type="text" name="projectedStats">
+    <label>Projected Stats:</label>
+    <input type="text" name="projectedStats">
 
-  <button type="submit">Save</button>
-</form>
+    <label>Fantasy Points:</label>
+    <input type="number" name="fantasyPoints" step="0.1">
+
+    <button type="submit" class="btn btn-add">Save</button>
+  </form>
+
+  <a href="/stats" class="btn btn-delete">Cancel</a>
+</div>
+
 

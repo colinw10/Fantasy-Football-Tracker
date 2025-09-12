@@ -1,30 +1,63 @@
-<h1><%= team.name %></h1>
-<p>League: <%= team.leagueName %></p>
+<div class="container">
+  <h1><%= team.name %></h1>
+  <p>League: <%= team.leagueName %></p>
 
-<h2>Roster</h2>
-<ul>
-  <% roster.forEach(spot => { %>
-    <li>
-      <%= spot.player.name %> - <%= spot.player.position %>
-      <form action="/teams/roster/<%= spot._id %>?_method=DELETE" method="POST" style="display:inline;">
-        <button type="submit">Remove</button>
+  <% if (team.owner && team.owner._id.toString() === userId) { %>
+    <div class="actions">
+      <a href="/teams/<%= team._id %>/edit" class="btn btn-edit">Edit Team</a>
+      <form action="/teams/<%= team._id %>?_method=DELETE" method="POST">
+        <button type="submit" class="btn btn-delete">Delete Team</button>
       </form>
-    </li>
-  <% }) %>
-</ul>
+    </div>
+  <% } %>
 
-<h3>Add Player to Roster</h3>
-<form action="/teams/<%= team._id %>/roster" method="POST">
-  <select name="playerId" required>
-    <option value="">-- Select a player --</option>
-    <% players.forEach(player => { %>
-      <option value="<%= player._id %>"><%= player.name %> - <%= player.position %></option>
+  <h2>Roster</h2>
+  <ul>
+    <% roster.forEach(spot => { %>
+      <li>
+        <a href="/players/<%= spot.player._id %>"><%= spot.player.name %></a>
+        - <%= spot.player.position %>
+
+        <% if (spot.player.latestStat && spot.player.latestStat.fantasyPoints) { %>
+          | Fantasy Points: <%= spot.player.latestStat.fantasyPoints.toFixed(1) %>
+        <% } %>
+
+        <% if (team.owner && team.owner._id.toString() === userId) { %>
+          <div class="actions">
+            <form action="/teams/roster/<%= spot._id %>?_method=DELETE" method="POST">
+              <button type="submit" class="btn btn-delete">Remove</button>
+            </form>
+          </div>
+        <% } %>
+      </li>
     <% }) %>
-  </select>
-  <button type="submit">Add</button>
-</form>
+  </ul>
 
-<a href="/teams">Back to My Teams</a>
+  <h3>Total Fantasy Points: <%= totalFantasyPoints.toFixed(1) %></h3>
+
+  <% if (team.owner && team.owner._id.toString() === userId) { %>
+    <h3>Add Player to Roster</h3>
+    <form action="/teams/<%= team._id %>/roster" method="POST">
+      <select name="playerId" required>
+        <option value="">-- Select a player --</option>
+        <% players.forEach(player => { %>
+          <option value="<%= player._id %>"><%= player.name %> - <%= player.position %></option>
+        <% }) %>
+      </select>
+      <button type="submit" class="btn btn-add">Add</button>
+    </form>
+  <% } %>
+
+  <a href="/teams" class="btn btn-add">Back to My Teams</a>
+</div>
+
+
+
+
+
+
+
+
 
 
 

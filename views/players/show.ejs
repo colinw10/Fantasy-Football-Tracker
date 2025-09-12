@@ -1,52 +1,70 @@
-<h1><%= player.name %></h1>
-<p>Team: <%= player.team %></p>
-<p>Position: <%= player.position %></p>
-<p>Injury Status: <%= player.injuryStatus %></p>
+<div class="container">
+  <h1><%= player.name %></h1>
+  <p>Team: <%= player.team %></p>
+  <p>Position: <%= player.position %></p>
+  <p>Injury Status: <%= player.injuryStatus %></p>
 
-<hr />
+  <% if (player.owner && player.owner.toString() === userId) { %>
+    <div class="actions">
+      <a href="/players/<%= player._id %>/edit" class="btn btn-edit">Edit</a>
+      <form action="/players/<%= player._id %>?_method=DELETE" method="POST">
+        <button type="submit" class="btn btn-delete">Delete</button>
+      </form>
+    </div>
+  <% } %>
 
-<h2>Stats</h2>
-<% if (stats.length > 0) { %>
-  <table border="1" cellpadding="6">
-    <thead>
-      <tr>
-        <th>Week</th>
-        <th>Passing</th>
-        <th>Rushing</th>
-        <th>Receiving</th>
-        <th>TDs</th>
-        <th>Carries</th>
-        <th>Receptions</th>
-        <th>Projected</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% stats.forEach(stat => { %>
+  <hr />
+
+  <h2>Stats</h2>
+  <% if (stats.length > 0) { %>
+    <table>
+      <thead>
         <tr>
-          <td><%= stat.week %></td>
-          <td><%= stat.passingYards %></td>
-          <td><%= stat.rushingYards %></td>
-          <td><%= stat.receivingYards %></td>
-          <td><%= stat.touchdowns %></td>
-          <td><%= stat.carries %></td>
-          <td><%= stat.receptions %></td>
-          <td><%= stat.projectedStats %></td>
-          <td>
-            <a href="/stats/<%= stat._id %>/edit">Edit</a>
-            <form action="/stats/<%= stat._id %>?_method=DELETE" method="POST" style="display:inline;">
-              <button type="submit">Delete</button>
-            </form>
-          </td>
+          <th>Week</th>
+          <th>Passing</th>
+          <th>Rushing</th>
+          <th>Receiving</th>
+          <th>TDs</th>
+          <th>Carries</th>
+          <th>Receptions</th>
+          <th>Projected</th>
+          <th>Fantasy Points</th>
+          <th>Actions</th>
         </tr>
-      <% }) %>
-    </tbody>
-  </table>
-<% } else { %>
-  <p>No stats yet for this player.</p>
-<% } %>
+      </thead>
+      <tbody>
+        <% stats.forEach(stat => { %>
+          <tr>
+            <td><%= stat.week %></td>
+            <td><%= stat.passingYards %></td>
+            <td><%= stat.rushingYards %></td>
+            <td><%= stat.receivingYards %></td>
+            <td><%= stat.touchdowns %></td>
+            <td><%= stat.carries %></td>
+            <td><%= stat.receptions %></td>
+            <td><%= stat.projectedStats %></td>
+            <td><%= stat.fantasyPoints %></td>
+            <td>
+              <% if (stat.owner && stat.owner.toString() === userId) { %>
+                <div class="actions">
+                  <a href="/stats/<%= stat._id %>/edit" class="btn btn-edit">Edit</a>
+                  <form action="/stats/<%= stat._id %>?_method=DELETE" method="POST">
+                    <button type="submit" class="btn btn-delete">Delete</button>
+                  </form>
+                </div>
+              <% } %>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  <% } else { %>
+    <p>No stats yet for this player.</p>
+  <% } %>
 
-<a href="/stats/new">Add Stats</a>
-<br>
-<a href="/players">Back to All Players</a>
+  <a href="/stats/new" class="btn btn-add">Add Stats</a>
+  <br>
+  <a href="/players" class="btn btn-add">Back to All Players</a>
+</div>
+
 

@@ -1,18 +1,22 @@
-<h1>Edit <%= player.name %></h1>
-<form action="/players/<%= player._id %>?_method=PUT" method="POST">
-  <label>Name:</label>
-  <input type="text" name="name" value="<%= player.name %>" required>
+<div class="container">
+  <h1>Edit <%= player.name %></h1>
+  <form action="/players/<%= player._id %>?_method=PUT" method="POST">
+    <label>Name:</label>
+    <input type="text" name="name" value="<%= player.name %>" required>
 
-  <label>Team:</label>
-  <input type="text" name="team" value="<%= player.team %>">
+    <label>Team:</label>
+    <input type="text" name="team" value="<%= player.team %>">
 
-  <label>Position:</label>
-  <input type="text" name="position" value="<%= player.position %>">
+    <label>Position:</label>
+    <input type="text" name="position" value="<%= player.position %>">
 
-  <label>Injury Status:</label>
-  <input type="text" name="injuryStatus" value="<%= player.injuryStatus %>">
+    <label>Injury Status:</label>
+    <input type="text" name="injuryStatus" value="<%= player.injuryStatus %>">
 
-  <button type="submit">Save Changes</button>
-</form>
-<a href="/players/<%= player._id %>">Cancel</a>
+    <button type="submit" class="btn btn-edit">Save Changes</button>
+  </form>
+  <a href="/players/<%= player._id %>" class="btn btn-delete">Cancel</a>
+</div>
+
+
 

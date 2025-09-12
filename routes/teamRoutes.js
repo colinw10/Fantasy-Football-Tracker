@@ -3,6 +3,7 @@ const router = express.Router();
 const Team = require('../models/Team');
 const RosterSpot = require('../models/RosterSpot');
 const Player = require('../models/Player');
+const StatLine = require('../models/StatLine'); // 👈 NEW
 
 // Middleware to require login
 function requireAuth(req, res, next) {
@@ -12,11 +13,36 @@ function requireAuth(req, res, next) {
   next();
 }
 
-// Index - all teams owned by current user
+
+// Index - all teams owned by current user + fantasy points leaderboard
 router.get('/', requireAuth, async (req, res) => {
   const myTeams = await Team.find({ owner: req.session.userId });
-  res.render('teams/index.ejs', { teams: myTeams });
+
+  const teamsWithPoints = [];
+  for (let team of myTeams) {
+    const roster = await RosterSpot.find({ team: team._id }).populate('player');
+
+    let totalFantasyPoints = 0;
+    for (let spot of roster) {
+      const latestStat = await StatLine.findOne({ player: spot.player._id })
+        .sort({ week: -1 });
+      if (latestStat) {
+        totalFantasyPoints += latestStat.fantasyPoints || 0;
+      }
+    }
+
+    teamsWithPoints.push({
+      ...team.toObject(),
+      totalFantasyPoints
+    });
+  }
+
+  // Sort leaderboard: highest points first
+  teamsWithPoints.sort((a, b) => b.totalFantasyPoints - a.totalFantasyPoints);
+
+  res.render('teams/index.ejs', { teams: teamsWithPoints });
 });
+
 
 // New - form to create team
 router.get('/new', requireAuth, (req, res) => {
@@ -33,7 +59,8 @@ router.post('/', requireAuth, async (req, res) => {
   res.redirect('/teams');
 });
 
-// Show - detail of one team (with roster + players list)
+
+// Show - detail of one team (with roster + fantasy points)
 router.get('/:id', requireAuth, async (req, res) => {
   const team = await Team.findById(req.params.id).populate('owner');
   if (!team || team.owner._id.toString() !== req.session.userId) {
@@ -41,12 +68,27 @@ router.get('/:id', requireAuth, async (req, res) => {
   }
 
   const roster = await RosterSpot.find({ team: req.params.id }).populate('player');
+  let totalFantasyPoints = 0;
+
+  // attach latest stat to each player
+  for (let spot of roster) {
+    const latestStat = await StatLine.findOne({ player: spot.player._id })
+      .sort({ week: -1 });
+    if (latestStat) {
+      spot.player.latestStat = latestStat;
+      totalFantasyPoints += latestStat.fantasyPoints || 0;
+    }
+  }
+
   const allPlayers = await Player.find({});
 
-  res.render('teams/show.ejs', { team, roster, players: allPlayers });
+  res.render('teams/show.ejs', { team, roster, players: allPlayers, totalFantasyPoints });
 });
 
+
+
 // Edit - form to edit team
+
 router.get('/:id/edit', requireAuth, async (req, res) => {
   const team = await Team.findById(req.params.id);
   if (!team || team.owner.toString() !== req.session.userId) {
@@ -54,6 +96,7 @@ router.get('/:id/edit', requireAuth, async (req, res) => {
   }
   res.render('teams/edit.ejs', { team });
 });
+
 
 // Update - update team in DB
 router.put('/:id', requireAuth, async (req, res) => {
@@ -76,9 +119,8 @@ router.delete('/:id', requireAuth, async (req, res) => {
   res.redirect('/teams');
 });
 
-// -----------------------------
+
 // Roster routes
-// -----------------------------
 
 // Add player to team roster
 router.post('/:id/roster', requireAuth, async (req, res) => {
@@ -109,6 +151,9 @@ router.delete('/roster/:rosterSpotId', requireAuth, async (req, res) => {
 });
 
 module.exports = router;
+
+
+
 
 
 

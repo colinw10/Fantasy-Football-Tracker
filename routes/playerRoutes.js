@@ -1,57 +1,103 @@
 const express = require('express');
 const router = express.Router();
 const Player = require('../models/Player');
-const StatLine = require('../models/StatLine'); // NEW
+const StatLine = require('../models/StatLine');
 
+// Middleware to require login
+function requireAuth(req, res, next) {
+  if (!req.session.userId) {
+    return res.redirect('/auth/login');
+  }
+  next();
+}
+
+// -----------------------------
 // Index - list all players
-router.get('/', async (req, res) => {
-  const allPlayers = await Player.find({});
-  res.render('players/index.ejs', { players: allPlayers });
+// -----------------------------
+router.get('/', requireAuth, async (req, res) => {
+  const allPlayers = await Player.find({}).populate('owner'); // 👈 populate owner
+  res.render('players/index.ejs', { 
+    players: allPlayers, 
+    userId: req.session.userId 
+  });
 });
 
+
+// -----------------------------
 // New - show form to create player
-router.get('/new', (req, res) => {
-  res.render('players/new.ejs');
+// -----------------------------
+router.get('/new', requireAuth, (req, res) => {
+  res.render('players/new.ejs', { userId: req.session.userId });
 });
 
-// Create - add new player
-router.post('/', async (req, res) => {
+// -----------------------------
+// Create - add new player (ties owner to logged-in user)
+// -----------------------------
+router.post('/', requireAuth, async (req, res) => {
   const { redirectToTeam, ...playerData } = req.body;
-  const newPlayer = await Player.create(playerData);
+  const newPlayer = await Player.create({
+    ...playerData,
+    owner: req.session.userId
+  });
 
   if (redirectToTeam) {
-    // If the request came from a team page, redirect back there
     res.redirect(`/teams/${redirectToTeam}`);
   } else {
     res.redirect('/players');
   }
 });
 
-
+// -----------------------------
 // Show - one player detail (with stats)
-router.get('/:id', async (req, res) => {
-  const foundPlayer = await Player.findById(req.params.id);
-  const stats = await StatLine.find({ player: req.params.id }); // NEW
-  res.render('players/show.ejs', { player: foundPlayer, stats });
+// -----------------------------
+router.get('/:id', requireAuth, async (req, res) => {
+  const foundPlayer = await Player.findById(req.params.id).populate('owner');
+  const stats = await StatLine.find({ player: req.params.id });
+
+  res.render('players/show.ejs', { 
+    player: foundPlayer, 
+    stats, 
+    userId: req.session.userId   // 👈 makes Edit/Delete work in show.ejs
+  });
 });
 
-// Edit - show form to edit player
-router.get('/:id/edit', async (req, res) => {
+// -----------------------------
+// Edit - show form to edit player (only owner)
+// -----------------------------
+router.get('/:id/edit', requireAuth, async (req, res) => {
   const foundPlayer = await Player.findById(req.params.id);
-  res.render('players/edit.ejs', { player: foundPlayer });
+  if (!foundPlayer || foundPlayer.owner.toString() !== req.session.userId) {
+    return res.redirect('/players');
+  }
+  res.render('players/edit.ejs', { 
+    player: foundPlayer, 
+    userId: req.session.userId 
+  });
 });
 
-// Update - update player
-router.put('/:id', async (req, res) => {
-  await Player.findByIdAndUpdate(req.params.id, req.body);
+// -----------------------------
+// Update - update player (only owner)
+// -----------------------------
+router.put('/:id', requireAuth, async (req, res) => {
+  const player = await Player.findById(req.params.id);
+  if (player && player.owner.toString() === req.session.userId) {
+    await Player.findByIdAndUpdate(req.params.id, req.body);
+  }
   res.redirect(`/players/${req.params.id}`);
 });
 
-// Delete - remove player
-router.delete('/:id', async (req, res) => {
-  await Player.findByIdAndDelete(req.params.id);
+// -----------------------------
+// Delete - remove player (only owner)
+// -----------------------------
+router.delete('/:id', requireAuth, async (req, res) => {
+  const player = await Player.findById(req.params.id);
+  if (player && player.owner.toString() === req.session.userId) {
+    await Player.findByIdAndDelete(req.params.id);
+  }
   res.redirect('/players');
 });
 
 module.exports = router;
+
+
 

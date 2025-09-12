@@ -1,14 +1,36 @@
-<h1>All Players</h1>
-<a href="/players/new">Add New Player</a>
+<div class="container">
+  <h1>All Players</h1>
+  <a href="/players/new" class="btn btn-add">Add New Player</a>
 
-<ul>
-  <% players.forEach(player => { %>
-    <li>
-      <a href="/players/<%= player._id %>">
-        <%= player.name %> - <%= player.position %> (<%= player.team %>)
-      </a>
-    </li>
-  <% }) %>
-</ul>
+  <ul>
+    <% players.forEach(player => { %>
+      <li>
+        <a href="/players/<%= player._id %>">
+          <%= player.name %> - <%= player.position %> (<%= player.team %>)
+        </a>
+
+        <% if (player.owner && player.owner._id.toString() === userId) { %>
+          <div class="actions">
+            <a href="/players/<%= player._id %>/edit" class="btn btn-edit">Edit</a>
+            <form action="/players/<%= player._id %>?_method=DELETE" method="POST">
+              <button type="submit" class="btn btn-delete">Delete</button>
+            </form>
+          </div>
+        <% } %>
+      </li>
+    <% }) %>
+  </ul>
+</div>
+
+
+
+
+
+
+
+
+
+
+
 
 

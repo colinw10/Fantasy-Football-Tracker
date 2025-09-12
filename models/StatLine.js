@@ -9,8 +9,11 @@ const statLineSchema = new mongoose.Schema({
   touchdowns: Number,
   carries: Number,
   receptions: Number,
-  projectedStats: String
+  projectedStats: String,
+  fantasyPoints: { type: Number, default: 0 },  
+  owner: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }
 });
+
 
 module.exports = mongoose.model('StatLine', statLineSchema);
 

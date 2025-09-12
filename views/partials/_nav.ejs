@@ -1,18 +1,20 @@
-<nav style="margin-bottom: 1rem;">
-  <a href="/">Home</a> |
-  <a href="/teams">My Teams</a> |
-  <a href="/players">Players</a> |
-  <a href="/stats">Stats</a>
+<nav>
+  <div class="nav-left">
+    <a href="/">Home</a>
+    <a href="/teams">My Teams</a>
+    <a href="/players">Players</a>
+    <a href="/stats">Stats</a>
+  </div>
 
-  <% if (userId) { %>
-    |
-    <form action="/auth/logout" method="POST" style="display:inline;">
-      <button type="submit">Logout</button>
-    </form>
-  <% } else { %>
-    |
-    <a href="/auth/login">Login</a> |
-    <a href="/auth/signup">Sign Up</a>
-  <% } %>
+  <div class="nav-right">
+    <% if (userId) { %>
+      <form action="/auth/logout" method="POST" style="display:inline;">
+        <button type="submit">Logout</button>
+      </form>
+    <% } else { %>
+      <a href="/auth/login">Login</a>
+      <a href="/auth/signup">Sign Up</a>
+    <% } %>
+  </div>
 </nav>
-<hr>
+

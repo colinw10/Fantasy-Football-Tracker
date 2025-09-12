@@ -1,11 +1,38 @@
-<h1>All Stats</h1>
-<ul>
-  <% stats.forEach(stat => { %>
-    <li>
-      <%= stat.player.name %> - Week <%= stat.week %>: 
-      <%= stat.passingYards %> passing, <%= stat.rushingYards %> rushing, 
-      <%= stat.receivingYards %> receiving
-    </li>
-  <% }) %>
-</ul>
-<a href="/stats/new">Add Stats</a>
+<div class="container">
+  <h1>All Stats</h1>
+  <ul>
+    <% stats.forEach(stat => { %>
+      <li>
+        <%= stat.player.name %> - Week <%= stat.week %>:
+        <% if (stat.passingYards) { %><%= stat.passingYards %> passing<% } %>
+        <% if (stat.rushingYards) { %>, <%= stat.rushingYards %> rushing<% } %>
+        <% if (stat.receivingYards) { %>, <%= stat.receivingYards %> receiving<% } %>
+        <% if (stat.touchdowns) { %>, <%= stat.touchdowns %> TDs<% } %>
+        <% if (stat.carries) { %>, <%= stat.carries %> carries<% } %>
+        <% if (stat.receptions) { %>, <%= stat.receptions %> receptions<% } %>
+        <% if (stat.projectedStats) { %>, Projected: <%= stat.projectedStats %><% } %>
+        <% if (stat.fantasyPoints) { %>, Fantasy Points: <%= stat.fantasyPoints.toFixed(1) %><% } %>
+
+        <% if (stat.owner && stat.owner.toString() === userId) { %>
+          <div class="actions">
+            <a href="/stats/<%= stat._id %>/edit" class="btn btn-edit">Edit</a>
+            <form action="/stats/<%= stat._id %>?_method=DELETE" method="POST">
+              <button type="submit" class="btn btn-delete">Delete</button>
+            </form>
+          </div>
+        <% } %>
+      </li>
+    <% }) %>
+  </ul>
+
+  <a href="/stats/new" class="btn btn-add">Add Stats</a>
+</div>
+
+
+
+
+
+
+
+
+

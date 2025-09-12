@@ -1,15 +1,45 @@
-<h1>My Teams</h1>
-<a href="/teams/new">Create New Team</a>
-<ul>
-  <% teams.forEach(team => { %>
-    <li>
-      <a href="/teams/<%= team._id %>"><%= team.name %> - <%= team.leagueName %></a>
-      <a href="/teams/<%= team._id %>/edit">Edit</a>
-      <form action="/teams/<%= team._id %>?_method=DELETE" method="POST" style="display:inline;">
-        <button type="submit">Delete</button>
-      </form>
-    </li>
-  <% }) %>
-</ul>
+<div class="container">
+  <h1>My Teams</h1>
+  <a href="/teams/new" class="btn btn-add">Create New Team</a>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Rank</th>
+        <th>Team</th>
+        <th>League</th>
+        <th>Total Fantasy Points</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% teams.forEach((team, index) => { %>
+        <tr>
+          <td><%= index + 1 %></td>
+          <td>
+            <a href="/teams/<%= team._id %>"><%= team.name %></a>
+          </td>
+          <td><%= team.leagueName %></td>
+          <td><%= team.totalFantasyPoints.toFixed(1) %></td>
+          <td>
+            <% if (team.owner && team.owner.toString() === userId) { %>
+              <div class="actions">
+                <a href="/teams/<%= team._id %>/edit" class="btn btn-edit">Edit</a>
+                <form action="/teams/<%= team._id %>?_method=DELETE" method="POST">
+                  <button type="submit" class="btn btn-delete">Delete</button>
+                </form>
+              </div>
+            <% } %>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
+
+
+
+
+
 
 

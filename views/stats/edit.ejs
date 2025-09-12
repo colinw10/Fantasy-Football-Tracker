@@ -1,29 +1,36 @@
-<h1>Edit Stats for <%= stat.player.name %></h1>
-<form action="/stats/<%= stat._id %>?_method=PUT" method="POST">
-  <label>Week:</label>
-  <input type="number" name="week" value="<%= stat.week %>">
+<div class="container">
+  <h1>Edit Stats for <%= stat.player.name %></h1>
+  <form action="/stats/<%= stat._id %>?_method=PUT" method="POST">
+    <label>Week:</label>
+    <input type="number" name="week" value="<%= stat.week %>">
 
-  <label>Passing Yards:</label>
-  <input type="number" name="passingYards" value="<%= stat.passingYards %>">
+    <label>Passing Yards:</label>
+    <input type="number" name="passingYards" value="<%= stat.passingYards %>">
 
-  <label>Rushing Yards:</label>
-  <input type="number" name="rushingYards" value="<%= stat.rushingYards %>">
+    <label>Rushing Yards:</label>
+    <input type="number" name="rushingYards" value="<%= stat.rushingYards %>">
 
-  <label>Receiving Yards:</label>
-  <input type="number" name="receivingYards" value="<%= stat.receivingYards %>">
+    <label>Receiving Yards:</label>
+    <input type="number" name="receivingYards" value="<%= stat.receivingYards %>">
 
-  <label>Touchdowns:</label>
-  <input type="number" name="touchdowns" value="<%= stat.touchdowns %>">
+    <label>Touchdowns:</label>
+    <input type="number" name="touchdowns" value="<%= stat.touchdowns %>">
 
-  <label>Carries:</label>
-  <input type="number" name="carries" value="<%= stat.carries %>">
+    <label>Carries:</label>
+    <input type="number" name="carries" value="<%= stat.carries %>">
 
-  <label>Receptions:</label>
-  <input type="number" name="receptions" value="<%= stat.receptions %>">
+    <label>Receptions:</label>
+    <input type="number" name="receptions" value="<%= stat.receptions %>">
 
-  <label>Projected Stats:</label>
-  <input type="text" name="projectedStats" value="<%= stat.projectedStats %>">
+    <label>Projected Stats:</label>
+    <input type="text" name="projectedStats" value="<%= stat.projectedStats %>">
 
-  <button type="submit">Save Changes</button>
-</form>
+    <label>Fantasy Points:</label>
+    <input type="number" name="fantasyPoints" value="<%= stat.fantasyPoints %>" step="0.1">
+
+    <button type="submit" class="btn btn-edit">Save Changes</button>
+  </form>
+
+  <a href="/stats" class="btn btn-delete">Cancel</a>
+</div>
 

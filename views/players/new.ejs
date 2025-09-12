@@ -1,18 +1,21 @@
-<h1>Add New Player</h1>
-<form action="/players" method="POST">
-  <label>Name:</label>
-  <input type="text" name="name" required>
+<div class="container">
+  <h1>Add New Player</h1>
+  <form action="/players" method="POST">
+    <label>Name:</label>
+    <input type="text" name="name" required>
 
-  <label>Team:</label>
-  <input type="text" name="team">
+    <label>Team:</label>
+    <input type="text" name="team">
 
-  <label>Position:</label>
-  <input type="text" name="position">
+    <label>Position:</label>
+    <input type="text" name="position">
 
-  <label>Injury Status:</label>
-  <input type="text" name="injuryStatus">
+    <label>Injury Status:</label>
+    <input type="text" name="injuryStatus">
 
-  <button type="submit">Save</button>
-</form>
-<a href="/players">Cancel</a>
+    <button type="submit" class="btn btn-add">Save</button>
+  </form>
+  <a href="/players" class="btn btn-delete">Cancel</a>
+</div>
+
 
