@@ -2,10 +2,11 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 
 const userSchema = new mongoose.Schema({
-  username: { 
+  email: { 
     type: String, 
     required: true, 
     unique: true, 
+    lowercase: true, 
     trim: true 
   },
   password: { 
@@ -27,4 +28,6 @@ userSchema.methods.comparePassword = function(candidatePassword) {
 };
 
 module.exports = mongoose.model('User', userSchema);
+
+
 

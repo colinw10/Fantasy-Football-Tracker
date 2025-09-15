@@ -10,19 +10,27 @@ router.get('/signup', (req, res) => {
 // Handle signup
 router.post('/signup', async (req, res) => {
   try {
-    const { username, password } = req.body;
+    const { email, password } = req.body;
 
-    // Create user
-    const user = new User({ username, password });
+    // Check if email already exists
+    const existing = await User.findOne({ email });
+    if (existing) {
+      console.log("❌ Email already exists");
+      return res.redirect('/auth/signup');
+    }
+
+    // Create new user (password will be hashed in the User model pre-save hook)
+    const user = new User({ email, password });
     await user.save();
 
     // Store user ID in session
     req.session.userId = user._id;
 
+    // Redirect to teams page after signup
     res.redirect('/teams');
   } catch (err) {
-    console.error(err);
-    res.redirect('/auth/signup'); // fallback if something goes wrong
+    console.error("Signup error:", err);
+    res.redirect('/auth/signup');
   }
 });
 
@@ -34,25 +42,27 @@ router.get('/login', (req, res) => {
 // Handle login
 router.post('/login', async (req, res) => {
   try {
-    const { username, password } = req.body;
+    const { email, password } = req.body;
 
-    // Find user by username
-    const user = await User.findOne({ username });
+    // Find user by email
+    const user = await User.findOne({ email });
     if (!user) {
-      return res.redirect('/auth/login'); // invalid username
+      console.log("❌ Invalid email");
+      return res.redirect('/auth/login');
     }
 
-    // Compare password
+    // Compare password with hashed one in DB
     const isMatch = await user.comparePassword(password);
     if (!isMatch) {
-      return res.redirect('/auth/login'); // invalid password
+      console.log("❌ Invalid password");
+      return res.redirect('/auth/login');
     }
 
-    // Login successful
+    // Login successful → store userId in session
     req.session.userId = user._id;
     res.redirect('/teams');
   } catch (err) {
-    console.error(err);
+    console.error("Login error:", err);
     res.redirect('/auth/login');
   }
 });
@@ -65,4 +75,7 @@ router.post('/logout', (req, res) => {
 });
 
 module.exports = router;
+
+
+
 

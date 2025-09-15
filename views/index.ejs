@@ -1,10 +1,15 @@
-<h1>Welcome to Fantasy Football Tracker</h1>
-<p>Track players, teams, rosters, and stats in one place.</p>
+<div class="container">
+  <h1>Welcome to Fantasy Football Tracker</h1>
+  <p>Track players, teams, rosters, and stats in one place.</p>
 
-<% if (userId) { %>
-  <a href="/players">View Players</a> |
-  <a href="/teams">My Teams</a>
-<% } else { %>
-  <a href="/auth/login">Login</a> |
-  <a href="/auth/signup">Sign Up</a>
-<% } %>
+  <!-- Landing image -->
+  <img src="/images/footballplayer.png" alt="Football Player" class="landing-img">
+
+  <% if (userId) { %>
+    <a href="/players" class="btn">View Players</a> |
+    <a href="/teams" class="btn">My Teams</a>
+  <% } else { %>
+    <a href="/auth/login" class="btn">Login</a> |
+    <a href="/auth/signup" class="btn">Sign Up</a>
+  <% } %>
+</div>
