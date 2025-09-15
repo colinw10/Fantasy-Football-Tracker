@@ -19,7 +19,7 @@ router.post('/signup', async (req, res) => {
       return res.redirect('/auth/signup');
     }
 
-    // Create new user (password will be hashed in the User model pre-save hook)
+    // Create new user 
     const user = new User({ email, password });
     await user.save();
 

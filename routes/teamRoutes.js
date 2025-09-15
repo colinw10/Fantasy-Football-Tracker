@@ -88,7 +88,6 @@ router.get('/:id', requireAuth, async (req, res) => {
 
 
 // Edit - form to edit team
-
 router.get('/:id/edit', requireAuth, async (req, res) => {
   const team = await Team.findById(req.params.id);
   if (!team || team.owner.toString() !== req.session.userId) {
@@ -118,9 +117,6 @@ router.delete('/:id', requireAuth, async (req, res) => {
   }
   res.redirect('/teams');
 });
-
-
-// Roster routes
 
 // Add player to team roster
 router.post('/:id/roster', requireAuth, async (req, res) => {

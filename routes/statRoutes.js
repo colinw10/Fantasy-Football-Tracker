@@ -22,9 +22,7 @@ function calculateFantasyPoints({ passingYards = 0, rushingYards = 0, receivingY
   );
 }
 
-// -----------------------------
 // Index - list all statlines
-// -----------------------------
 router.get('/', requireAuth, async (req, res) => {
   const stats = await StatLine.find({})
     .populate('player')
@@ -33,21 +31,17 @@ router.get('/', requireAuth, async (req, res) => {
   res.render('stats/index.ejs', { 
     stats, 
     title: "All Stats", 
-    userId: req.session.userId   // 👈 pass userId into EJS
+    userId: req.session.userId   
   });
 });
 
-// -----------------------------
 // New - form to create a statline
-// -----------------------------
 router.get('/new', requireAuth, async (req, res) => {
   const players = await Player.find({});
   res.render('stats/new.ejs', { players, title: "Add Stats", userId: req.session.userId });
 });
 
-// -----------------------------
 // Create - add new statline (auto-calc fantasy points + owner)
-// -----------------------------
 router.post('/', requireAuth, async (req, res) => {
   const { passingYards, rushingYards, receivingYards, touchdowns, carries, receptions, projectedStats, player, week } = req.body;
 
@@ -76,9 +70,7 @@ router.post('/', requireAuth, async (req, res) => {
   res.redirect(`/players/${player}`);
 });
 
-// -----------------------------
 // Edit - form to edit statline (only owner)
-// -----------------------------
 router.get('/:id/edit', requireAuth, async (req, res) => {
   const stat = await StatLine.findById(req.params.id).populate('player').populate('owner');
   if (!stat || stat.owner.toString() !== req.session.userId) {
@@ -87,9 +79,7 @@ router.get('/:id/edit', requireAuth, async (req, res) => {
   res.render('stats/edit.ejs', { stat, title: `Edit Stats for ${stat.player.name}`, userId: req.session.userId });
 });
 
-// -----------------------------
 // Update - update statline (auto-calc fantasy points + only owner)
-// -----------------------------
 router.put('/:id', requireAuth, async (req, res) => {
   const stat = await StatLine.findById(req.params.id);
   if (stat && stat.owner.toString() === req.session.userId) {
@@ -118,9 +108,7 @@ router.put('/:id', requireAuth, async (req, res) => {
   res.redirect(`/players/${stat.player}`);
 });
 
-// -----------------------------
 // Delete - remove statline (only owner)
-// -----------------------------
 router.delete('/:id', requireAuth, async (req, res) => {
   const stat = await StatLine.findById(req.params.id);
   if (stat && stat.owner.toString() === req.session.userId) {

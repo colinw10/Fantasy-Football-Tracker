@@ -11,9 +11,8 @@ function requireAuth(req, res, next) {
   next();
 }
 
-// -----------------------------
+
 // Index - list all players
-// -----------------------------
 router.get('/', requireAuth, async (req, res) => {
   const allPlayers = await Player.find({}).populate('owner'); // 👈 populate owner
   res.render('players/index.ejs', { 
@@ -23,16 +22,13 @@ router.get('/', requireAuth, async (req, res) => {
 });
 
 
-// -----------------------------
 // New - show form to create player
-// -----------------------------
 router.get('/new', requireAuth, (req, res) => {
   res.render('players/new.ejs', { userId: req.session.userId });
 });
 
-// -----------------------------
+
 // Create - add new player (ties owner to logged-in user)
-// -----------------------------
 router.post('/', requireAuth, async (req, res) => {
   const { redirectToTeam, ...playerData } = req.body;
   const newPlayer = await Player.create({
@@ -47,9 +43,7 @@ router.post('/', requireAuth, async (req, res) => {
   }
 });
 
-// -----------------------------
 // Show - one player detail (with stats)
-// -----------------------------
 router.get('/:id', requireAuth, async (req, res) => {
   const foundPlayer = await Player.findById(req.params.id).populate('owner');
   const stats = await StatLine.find({ player: req.params.id });
@@ -57,13 +51,11 @@ router.get('/:id', requireAuth, async (req, res) => {
   res.render('players/show.ejs', { 
     player: foundPlayer, 
     stats, 
-    userId: req.session.userId   // 👈 makes Edit/Delete work in show.ejs
+    userId: req.session.userId  
   });
 });
 
-// -----------------------------
 // Edit - show form to edit player (only owner)
-// -----------------------------
 router.get('/:id/edit', requireAuth, async (req, res) => {
   const foundPlayer = await Player.findById(req.params.id);
   if (!foundPlayer || foundPlayer.owner.toString() !== req.session.userId) {
@@ -75,9 +67,7 @@ router.get('/:id/edit', requireAuth, async (req, res) => {
   });
 });
 
-// -----------------------------
 // Update - update player (only owner)
-// -----------------------------
 router.put('/:id', requireAuth, async (req, res) => {
   const player = await Player.findById(req.params.id);
   if (player && player.owner.toString() === req.session.userId) {
@@ -86,9 +76,7 @@ router.put('/:id', requireAuth, async (req, res) => {
   res.redirect(`/players/${req.params.id}`);
 });
 
-// -----------------------------
 // Delete - remove player (only owner)
-// -----------------------------
 router.delete('/:id', requireAuth, async (req, res) => {
   const player = await Player.findById(req.params.id);
   if (player && player.owner.toString() === req.session.userId) {
