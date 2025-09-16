@@ -5,7 +5,7 @@ You just add your players to the roster and can insert stat lines that will auto
 
 ---
 
-![Home Page](./images/homepage.png)
+![Home Page](./public/images/homepage.png)
 ![Players Page](./images/playerspage.png)
 ![Player Profile](./images/playerprofile.png)
 ![Teams Page](./images/teamspage.png)
