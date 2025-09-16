@@ -11,7 +11,7 @@ function requireAuth(req, res, next) {
   next();
 }
 
-// 👉 Helper function to calculate fantasy points
+// Helper function to calculate fantasy points
 function calculateFantasyPoints({ passingYards = 0, rushingYards = 0, receivingYards = 0, touchdowns = 0, receptions = 0 }) {
   return (
     (passingYards / 25) +    // 1 pt per 25 passing yards
@@ -123,6 +123,7 @@ router.delete('/:id', requireAuth, async (req, res) => {
 });
 
 module.exports = router;
+
 
 
 
