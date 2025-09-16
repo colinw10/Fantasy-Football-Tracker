@@ -11,6 +11,17 @@ function requireAuth(req, res, next) {
   next();
 }
 
+// 👉 Helper function to calculate fantasy points
+function calculateFantasyPoints({ passingYards = 0, rushingYards = 0, receivingYards = 0, touchdowns = 0, receptions = 0 }) {
+  return (
+    (passingYards / 25) +    // 1 pt per 25 passing yards
+    (rushingYards / 10) +    // 1 pt per 10 rushing yards
+    (receivingYards / 10) +  // 1 pt per 10 receiving yards
+    (touchdowns * 6) +       // 6 pts per TD
+    (receptions * 1)         // 1 pt per reception (PPR)
+  );
+}
+
 // Index - list all stats for current user
 router.get('/', requireAuth, async (req, res) => {
   const stats = await StatLine.find({ owner: req.session.userId })
@@ -25,13 +36,33 @@ router.get('/new', requireAuth, async (req, res) => {
   res.render('stats/new.ejs', { players, userId: req.session.userId });
 });
 
-// Create - add new stat line
+// Create - add new stat line (with fantasy points auto-calculated)
 router.post('/', requireAuth, async (req, res) => {
   try {
+    const { passingYards, rushingYards, receivingYards, touchdowns, carries, receptions, projectedStats, player, week } = req.body;
+
+    const fantasyPoints = calculateFantasyPoints({
+      passingYards: Number(passingYards),
+      rushingYards: Number(rushingYards),
+      receivingYards: Number(receivingYards),
+      touchdowns: Number(touchdowns),
+      receptions: Number(receptions)
+    });
+
     const stat = new StatLine({
-      ...req.body,
+      player,
+      week,
+      passingYards,
+      rushingYards,
+      receivingYards,
+      touchdowns,
+      carries,
+      receptions,
+      projectedStats,
+      fantasyPoints,
       owner: req.session.userId
     });
+
     await stat.save();
     res.redirect('/stats');
   } catch (err) {
@@ -52,11 +83,32 @@ router.get('/:id/edit', requireAuth, async (req, res) => {
   res.render('stats/edit.ejs', { stat, players, userId: req.session.userId });
 });
 
-// Update - update stat (only owner)
+// Update - update stat (with fantasy points auto-calculated)
 router.put('/:id', requireAuth, async (req, res) => {
   const stat = await StatLine.findById(req.params.id);
   if (stat && stat.owner.toString() === req.session.userId) {
-    await StatLine.findByIdAndUpdate(req.params.id, req.body);
+    const { passingYards, rushingYards, receivingYards, touchdowns, carries, receptions, projectedStats, week, player } = req.body;
+
+    const fantasyPoints = calculateFantasyPoints({
+      passingYards: Number(passingYards),
+      rushingYards: Number(rushingYards),
+      receivingYards: Number(receivingYards),
+      touchdowns: Number(touchdowns),
+      receptions: Number(receptions)
+    });
+
+    await StatLine.findByIdAndUpdate(req.params.id, {
+      player,
+      week,
+      passingYards,
+      rushingYards,
+      receivingYards,
+      touchdowns,
+      carries,
+      receptions,
+      projectedStats,
+      fantasyPoints
+    });
   }
   res.redirect('/stats');
 });
@@ -71,6 +123,7 @@ router.delete('/:id', requireAuth, async (req, res) => {
 });
 
 module.exports = router;
+
 
 
 
