@@ -15,7 +15,7 @@ You just add your players to the roster and can insert stat lines that will auto
 ---
 
 ## 🚀 Deployment
-- [Live App](Deploy Link Here)  
+- https://fantasy-football-tracker-xzre.onrender.com/  
 - https://trello.com/b/RnJTHgyQ/my-trello-board
 
 ---
