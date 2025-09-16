@@ -21,7 +21,7 @@ All you have to do is add your players to the roster and can insert stat lines f
 ---
 
 ## 🛠️ Technologies Used
-- JavaScript  
+- Node.js  
 - EJS  
 - CSS  
 
