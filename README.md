@@ -1,7 +1,7 @@
 # Fantasy-Football-Tracker 🏈
 
 This is an application to give fantasy football managers another way to keep track of their team/teams' stats week to week or over the course of a full season.  
-All you have to do is add your players to the roster and can insert stat lines for each player.
+All you have to do is create a player and add your player to the roster then insert stat lines for each player. Fantasy Points will be calculated automatically.
 
 ---
 
