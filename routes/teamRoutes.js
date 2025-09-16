@@ -80,7 +80,8 @@ router.get('/:id', requireAuth, async (req, res) => {
     }
   }
 
-  const allPlayers = await Player.find({});
+  // ✅ FIX: only get this user’s players for dropdown
+  const allPlayers = await Player.find({ owner: req.session.userId });
 
   res.render('teams/show.ejs', { team, roster, players: allPlayers, totalFantasyPoints });
 });
@@ -124,10 +125,18 @@ router.post('/:id/roster', requireAuth, async (req, res) => {
     if (!req.body.playerId) {
       throw new Error("No player selected");
     }
+
+    // ✅ Prevent adding another user’s player by mistake
+    const player = await Player.findOne({ _id: req.body.playerId, owner: req.session.userId });
+    if (!player) {
+      throw new Error("Player not found or not owned by this user");
+    }
+
     await RosterSpot.create({
       team: req.params.id,
       player: req.body.playerId
     });
+
     res.redirect(`/teams/${req.params.id}`);
   } catch (err) {
     console.error("Error adding player to roster:", err.message);
@@ -147,6 +156,7 @@ router.delete('/roster/:rosterSpotId', requireAuth, async (req, res) => {
 });
 
 module.exports = router;
+
 
 
 

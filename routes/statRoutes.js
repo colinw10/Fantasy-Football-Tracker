@@ -11,113 +11,66 @@ function requireAuth(req, res, next) {
   next();
 }
 
-// Helper function to calculate fantasy points
-function calculateFantasyPoints({ passingYards = 0, rushingYards = 0, receivingYards = 0, touchdowns = 0, receptions = 0 }) {
-  return (
-    (passingYards / 25) +    // 1 pt per 25 passing yards
-    (rushingYards / 10) +    // 1 pt per 10 rushing yards
-    (receivingYards / 10) +  // 1 pt per 10 receiving yards
-    (touchdowns * 6) +       // 6 pts per TD
-    (receptions * 1)         // 1 pt per reception (PPR)
-  );
-}
-
-// Index - list all statlines
+// Index - list all stats for current user
 router.get('/', requireAuth, async (req, res) => {
-  const stats = await StatLine.find({})
-    .populate('player')
-    .populate('owner');
-
-  res.render('stats/index.ejs', { 
-    stats, 
-    title: "All Stats", 
-    userId: req.session.userId   
-  });
+  const stats = await StatLine.find({ owner: req.session.userId })
+    .populate('player');
+  res.render('stats/index.ejs', { stats, userId: req.session.userId });
 });
 
-// New - form to create a statline
+// New - form to add new stat line
 router.get('/new', requireAuth, async (req, res) => {
-  const players = await Player.find({});
-  res.render('stats/new.ejs', { players, title: "Add Stats", userId: req.session.userId });
+  // Only show players owned by this user
+  const players = await Player.find({ owner: req.session.userId });
+  res.render('stats/new.ejs', { players, userId: req.session.userId });
 });
 
-// Create - add new statline (auto-calc fantasy points + owner)
+// Create - add new stat line
 router.post('/', requireAuth, async (req, res) => {
-  const { passingYards, rushingYards, receivingYards, touchdowns, carries, receptions, projectedStats, player, week } = req.body;
-
-  const fantasyPoints = calculateFantasyPoints({
-    passingYards: Number(passingYards),
-    rushingYards: Number(rushingYards),
-    receivingYards: Number(receivingYards),
-    touchdowns: Number(touchdowns),
-    receptions: Number(receptions)
-  });
-
-  await StatLine.create({
-    player,
-    week,
-    passingYards,
-    rushingYards,
-    receivingYards,
-    touchdowns,
-    carries,
-    receptions,
-    projectedStats,
-    fantasyPoints, 
-    owner: req.session.userId
-  });
-
-  res.redirect(`/players/${player}`);
+  try {
+    const stat = new StatLine({
+      ...req.body,
+      owner: req.session.userId
+    });
+    await stat.save();
+    res.redirect('/stats');
+  } catch (err) {
+    console.error("Error creating stat:", err);
+    res.redirect('/stats/new');
+  }
 });
 
-// Edit - form to edit statline (only owner)
+// Edit - show form to edit stat (only owner)
 router.get('/:id/edit', requireAuth, async (req, res) => {
-  const stat = await StatLine.findById(req.params.id).populate('player').populate('owner');
+  const stat = await StatLine.findById(req.params.id).populate('player');
   if (!stat || stat.owner.toString() !== req.session.userId) {
     return res.redirect('/stats');
   }
-  res.render('stats/edit.ejs', { stat, title: `Edit Stats for ${stat.player.name}`, userId: req.session.userId });
+
+  // Only allow editing players owned by this user
+  const players = await Player.find({ owner: req.session.userId });
+  res.render('stats/edit.ejs', { stat, players, userId: req.session.userId });
 });
 
-// Update - update statline (auto-calc fantasy points + only owner)
+// Update - update stat (only owner)
 router.put('/:id', requireAuth, async (req, res) => {
   const stat = await StatLine.findById(req.params.id);
   if (stat && stat.owner.toString() === req.session.userId) {
-    const { passingYards, rushingYards, receivingYards, touchdowns, carries, receptions, projectedStats, week } = req.body;
-
-    const fantasyPoints = calculateFantasyPoints({
-      passingYards: Number(passingYards),
-      rushingYards: Number(rushingYards),
-      receivingYards: Number(receivingYards),
-      touchdowns: Number(touchdowns),
-      receptions: Number(receptions)
-    });
-
-    await StatLine.findByIdAndUpdate(req.params.id, {
-      week,
-      passingYards,
-      rushingYards,
-      receivingYards,
-      touchdowns,
-      carries,
-      receptions,
-      projectedStats,
-      fantasyPoints 
-    });
+    await StatLine.findByIdAndUpdate(req.params.id, req.body);
   }
-  res.redirect(`/players/${stat.player}`);
+  res.redirect('/stats');
 });
 
-// Delete - remove statline (only owner)
+// Delete - remove stat (only owner)
 router.delete('/:id', requireAuth, async (req, res) => {
   const stat = await StatLine.findById(req.params.id);
   if (stat && stat.owner.toString() === req.session.userId) {
     await StatLine.findByIdAndDelete(req.params.id);
-    return res.redirect(`/players/${stat.player}`);
   }
-  res.redirect('/players');
+  res.redirect('/stats');
 });
 
 module.exports = router;
+
 
 
